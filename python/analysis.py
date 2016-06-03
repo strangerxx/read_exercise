@@ -3,7 +3,7 @@ import db
 
 try:
     with db.mysql.cursor() as cursor:
-        sql = "SELECT * FROM `exercises` WHERE status is NULL"
+        sql = "SELECT * FROM `raw_exercises` WHERE status is NULL"
         cursor.execute(sql)
         exercises = cursor.fetchall()
     with db.mysql.cursor() as cursor:

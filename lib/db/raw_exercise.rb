@@ -1,5 +1,5 @@
 require "rubygems"
 require "active_record"
 
-class Exercise < ActiveRecord::Base
+class RawExercise < ActiveRecord::Base
 end
