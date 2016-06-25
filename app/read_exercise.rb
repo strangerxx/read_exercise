@@ -14,7 +14,7 @@ normal_exercises = NormalExercise.all
 array_exercises = Array.new
 normal_exercises.each do |n_exercise|
   exercise = Exercise.new(n_exercise['content'])
-  exercise.split_special_character!
+  # exercise.split_special_character!
   p exercise.normal_words
   exit
 

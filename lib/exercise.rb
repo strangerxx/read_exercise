@@ -14,7 +14,7 @@ String.class_eval do
     words
   end
 
-  def split_few_chars(chars)
+  def partition_few_chars(chars)
     # chars = ['.', ',']
     return [self] if chars.empty?
     words = self.partition_with_delete(chars.shift)
@@ -41,7 +41,17 @@ class Exercise
 
   def initialize(text)
     @normal_words = text.split(' ')
-    self.split_special_character!
+    self.partition_special_character!
+  end
+
+  def get_name_figure
+    @normal_words[@index_figure]
+  end
+
+  def get_features_figure
+    @index_features_figure.map do |index_feature_figure|
+      @normal_words[index_feature_figure]
+    end
   end
 
   #Определение фигуры
@@ -83,18 +93,18 @@ class Exercise
     end
   end
 
-    def split_special_character!(characters = [',', '.', '—'])
+  protected
+
+    def partition_special_character!(characters = [',', '.', '—'])
       clear_words = Array.new
       @normal_words.each do |word|
         # p word
         found_chars = word.get_character(characters)
-        clear_words += word.split_few_chars(found_chars)
+        clear_words += word.partition_few_chars(found_chars)
         # exit
       end
       @normal_words = clear_words
     end
-
-  protected
 
     def define_median_through_index(index_median)
       median = Hash.new
