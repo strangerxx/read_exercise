@@ -1,6 +1,6 @@
 # coding: utf-8
 
-require './settings/config'
+require './config/config'
 require './lib/reshuege.rb'
 
 reshuege = Reshuege.new('https://ege.sdamgia.ru/test?theme=168')
