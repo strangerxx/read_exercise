@@ -17,6 +17,8 @@ normal_exercises.each do |n_exercise|
 
   exercise.define_features_and_figure_from_normal_words(name_feature_figures, name_figures)
 
-  p exercise.index_features_figure
+  # p exercise.index_features_figure
+  exercise.define_median_from_normal_words
+  p exercise.medians
   # exit
 end
