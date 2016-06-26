@@ -54,6 +54,14 @@ class Exercise
     end
   end
 
+  def get_medianas
+    return [] unless @medians
+    @medians.map do |median|
+      {letter: @normal_words[median[:index_letter]],
+       edge: @normal_words[median[:index_edge]]}
+    end
+  end
+
   #Определение фигуры
   def define_figure_from_normal_words(a_figures)
     @index_figure = nil
@@ -113,15 +121,15 @@ class Exercise
       #"e -" or "m -"
       index_letter -= 1 if @normal_words[index_letter] == '—'
       #"e-" or "m-"
-      @normal_words[index_letter].slice!(1) if @normal_words[index_letter][1] == '—'
+      # @normal_words[index_letter].slice!(1) if @normal_words[index_letter][1] == '—'
       median[:index_letter] = index_letter
 
       pattern_edge = 'ребро'
       index_edge = search_in_normal_words(pattern_edge, index_letter)
 
-      name_edge = @normal_words[index_edge+1]
-      name_edge.slice!(-1) if name_edge[-1] == ',' or name_edge[-1] == '.'
-      median[:name_edge] = name_edge
+      # name_edge = @normal_words[index_edge+1]
+      # name_edge.slice!(-1) if name_edge[-1] == ',' or name_edge[-1] == '.'
+      median[:index_edge] = index_edge + 1
 
       median
     end
