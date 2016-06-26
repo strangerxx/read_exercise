@@ -110,8 +110,6 @@ describe 'Exercise' do
       normal_words = 'длина ребро правильный тетраэдр abcd равный 1. найти угол
       между прямая dm и cl, где m — середина ребро bc, l — середина ребро ab.'
       @exercise = Exercise.new(normal_words)
-      @exercise.define_features_and_figure_from_normal_words(@name_feature_figures, @name_figures)
-      @exercise.define_median_from_normal_words
     end
 
     it 'split "," "." "—" and word' do
@@ -135,6 +133,7 @@ describe 'Exercise' do
     end
 
     it 'get name figure and feature' do
+      @exercise.define_features_and_figure_from_normal_words(@name_feature_figures, @name_figures)
       expect(@exercise.get_name_figure).to eq('тетраэдр')
       expect(@exercise.get_features_figure).to eq(['правильный'])
     end
@@ -146,6 +145,17 @@ describe 'Exercise' do
       expect(@exercise.get_medianas[1][:letter]).to eq('l')
       expect(@exercise.get_medianas[1][:edge]).to eq('ab')
     end
+
+    it 'get equally' do
+      @exercise.define_equally
+
+      equallys = @exercise.get_equallys
+      expect(equallys[0][:name]).to eq('ребро')
+      expect(equallys[0][:value]).to eq('1')
+      expect(equallys[0][:feature]).to eq(nil)
+
+      expect(equallys[1]).to eq(nil)
+    end
   end
 
   describe '2 exercise' do
@@ -154,8 +164,6 @@ describe 'Exercise' do
       основание который равный 1, а боковой ребро равный 2, найти косинус угол
       между прямая sb и ad.'
       @exercise = Exercise.new(normal_words)
-      @exercise.define_features_and_figure_from_normal_words(@name_feature_figures, @name_figures)
-      @exercise.define_median_from_normal_words
     end
 
     it 'split "," "." "—" and word' do
@@ -163,12 +171,25 @@ describe 'Exercise' do
     end
 
     it 'get name figure and feature' do
+      @exercise.define_features_and_figure_from_normal_words(@name_feature_figures, @name_figures)
       expect(@exercise.get_name_figure).to eq('пирамида')
       expect(@exercise.get_features_figure).to eq(['шестиугольный', 'правильный'])
     end
 
     it 'get mediana' do
       expect(@exercise.get_medianas).to eq([])
+    end
+
+    it 'get equally' do
+      @exercise.define_equally
+
+      expect(@exercise.get_equallys[0][:name]).to eq('сторона')
+      expect(@exercise.get_equallys[0][:feature]).to eq('основание')
+      expect(@exercise.get_equallys[0][:value]).to eq('1')
+
+      expect(@exercise.get_equallys[1][:name]).to eq('ребро')
+      expect(@exercise.get_equallys[1][:feature]).to eq('боковой')
+      expect(@exercise.get_equallys[1][:value]).to eq('2')
     end
   end
 
@@ -177,7 +198,6 @@ describe 'Exercise' do
       normal_words = 'сторона правильный треугольный призма abca1b1c1 равный 8.
       высота этот призма равный 6. найти угол между прямая ca1 и ab1.'
       @exercise = Exercise.new(normal_words)
-      @exercise.define_features_and_figure_from_normal_words(@name_feature_figures, @name_figures)
     end
 
     it 'split "," "." "—" and word' do
@@ -185,8 +205,21 @@ describe 'Exercise' do
     end
 
     it 'get name figure and feature' do
+      @exercise.define_features_and_figure_from_normal_words(@name_feature_figures, @name_figures)
       expect(@exercise.get_name_figure).to eq('призма')
       expect(@exercise.get_features_figure).to eq(['треугольный', 'правильный'])
+    end
+
+    it 'get equally' do
+      @exercise.define_equally
+
+      expect(@exercise.get_equallys[0][:name]).to eq('сторона')
+      expect(@exercise.get_equallys[0][:feature]).to eq(nil)
+      expect(@exercise.get_equallys[0][:value]).to eq('8')
+
+      expect(@exercise.get_equallys[1][:name]).to eq('высота')
+      expect(@exercise.get_equallys[1][:feature]).to eq(nil)
+      expect(@exercise.get_equallys[1][:value]).to eq('6')
     end
   end
 
@@ -196,7 +229,6 @@ describe 'Exercise' do
       прямоугольный треугольник abc с гипотенуза ab, равный высота призма
       равный 6. найти угол между прямая ac1 и cb1.'
       @exercise = Exercise.new(normal_words)
-      @exercise.define_features_and_figure_from_normal_words(@name_feature_figures, @name_figures)
     end
 
     it 'split "," "." "—" and word' do
@@ -204,8 +236,14 @@ describe 'Exercise' do
     end
 
     it 'get name figure and feature' do
+      @exercise.define_features_and_figure_from_normal_words(@name_feature_figures, @name_figures)
       expect(@exercise.get_name_figure).to eq('призма')
       expect(@exercise.get_features_figure).to eq(['прямая'])
+    end
+
+    it 'raise don`t define value for equally' do
+      expect { @exercise.define_equally }.to raise_error(RuntimeError,
+                                                         "don`t define value for equally")
     end
   end
 
@@ -217,8 +255,6 @@ describe 'Exercise' do
       сечение являться прямоугольником.б) найти угол между диагональ это
       прямоугольника, если dc = 24, ab =10.'
       @exercise = Exercise.new(normal_words)
-      @exercise.define_features_and_figure_from_normal_words(@name_feature_figures, @name_figures)
-      @exercise.define_median_from_normal_words
     end
 
     it 'split "," "." "—" and word' do
@@ -226,6 +262,7 @@ describe 'Exercise' do
     end
 
     it 'get name figure and feature' do
+      @exercise.define_features_and_figure_from_normal_words(@name_feature_figures, @name_figures)
       expect(@exercise.get_name_figure).to eq('пирамида')
       expect(@exercise.get_features_figure).to eq([])
     end
@@ -241,8 +278,6 @@ describe 'Exercise' do
       normal_words = 'точка e — середина ребро cc1 куб abcda1b1c1d1. найти угол
       между прямая be и b1d.'
       @exercise = Exercise.new(normal_words)
-      @exercise.define_features_and_figure_from_normal_words(@name_feature_figures, @name_figures)
-      @exercise.define_median_from_normal_words
     end
 
     it 'split "," "." "—" and word' do
@@ -250,6 +285,7 @@ describe 'Exercise' do
     end
 
     it 'get name figure and feature' do
+      @exercise.define_features_and_figure_from_normal_words(@name_feature_figures, @name_figures)
       expect(@exercise.get_name_figure).to eq('куб')
       expect(@exercise.get_features_figure).to eq([])
     end
@@ -265,8 +301,6 @@ describe 'Exercise' do
       normal_words = 'точка e— середина ребро cc1 куб abcda1b1c1d1. найти угол
       между прямая be и ad.'
       @exercise = Exercise.new(normal_words)
-      @exercise.define_features_and_figure_from_normal_words(@name_feature_figures, @name_figures)
-      @exercise.define_median_from_normal_words
     end
 
     it 'split "," "." "—" and word' do
@@ -274,6 +308,7 @@ describe 'Exercise' do
     end
 
     it 'get name figure and feature' do
+      @exercise.define_features_and_figure_from_normal_words(@name_feature_figures, @name_figures)
       expect(@exercise.get_name_figure).to eq('куб')
       expect(@exercise.get_features_figure).to eq([])
     end
@@ -289,7 +324,6 @@ describe 'Exercise' do
       normal_words = 'на ребро cc1 куб abcda1b1c1d1 отметить точка e так, что
       ce:ec1=1:2. найти угол между прямая be и ac1.'
       @exercise = Exercise.new(normal_words)
-      @exercise.define_features_and_figure_from_normal_words(@name_feature_figures, @name_figures)
     end
 
     it 'split "," "." "—" and word' do
@@ -297,6 +331,7 @@ describe 'Exercise' do
     end
 
     it 'get name figure and feature' do
+      @exercise.define_features_and_figure_from_normal_words(@name_feature_figures, @name_figures)
       expect(@exercise.get_name_figure).to eq('куб')
       expect(@exercise.get_features_figure).to eq([])
     end
@@ -307,7 +342,6 @@ describe 'Exercise' do
       normal_words = 'на ребро cc1 куб abcda1b1c1d1 отметить точка e так, что
       ce:ec1=2:1. найти угол между прямая be и ac1.'
       @exercise = Exercise.new(normal_words)
-      @exercise.define_features_and_figure_from_normal_words(@name_feature_figures, @name_figures)
     end
 
     it 'split "," "." "—" and word' do
@@ -315,6 +349,7 @@ describe 'Exercise' do
     end
 
     it 'get name figure and feature' do
+      @exercise.define_features_and_figure_from_normal_words(@name_feature_figures, @name_figures)
       expect(@exercise.get_name_figure).to eq('куб')
       expect(@exercise.get_features_figure).to eq([])
     end
@@ -326,8 +361,6 @@ describe 'Exercise' do
       6, а косинус угол asb при вершина боков грань равный точка m—середина
       ребро sc. найти косинус угол между прямая bm и sa.'
       @exercise = Exercise.new(normal_words)
-      @exercise.define_features_and_figure_from_normal_words(@name_feature_figures, @name_figures)
-      @exercise.define_median_from_normal_words
     end
 
     it 'split "," "." "—" and word' do
@@ -335,6 +368,7 @@ describe 'Exercise' do
     end
 
     it 'get name figure and feature' do
+      @exercise.define_features_and_figure_from_normal_words(@name_feature_figures, @name_figures)
       expect(@exercise.get_name_figure).to eq('пирамида')
       expect(@exercise.get_features_figure).to eq(['треугольный', 'правильный'])
     end
@@ -351,8 +385,6 @@ describe 'Exercise' do
       10, а косинус угол asb при вершина боков грань равный точка m—середина
       ребро sc. найти косинус угол между прямая bm и sa.'
       @exercise = Exercise.new(normal_words)
-      @exercise.define_features_and_figure_from_normal_words(@name_feature_figures, @name_figures)
-      @exercise.define_median_from_normal_words
     end
 
     it 'split "," "." "—" and word' do
@@ -360,6 +392,7 @@ describe 'Exercise' do
     end
 
     it 'get name figure and feature' do
+      @exercise.define_features_and_figure_from_normal_words(@name_feature_figures, @name_figures)
       expect(@exercise.get_name_figure).to eq('пирамида')
       expect(@exercise.get_features_figure).to eq(['треугольный', 'правильный'])
     end
@@ -368,6 +401,11 @@ describe 'Exercise' do
       expect(@exercise.get_medianas[0][:letter]).to eq('m')
       expect(@exercise.get_medianas[0][:edge]).to eq('sc')
     end
+
+    it 'raise don`t define value for equally' do
+      expect { @exercise.define_equally }.to raise_error(RuntimeError,
+                                                         "don`t define value for equally")
+    end
   end
 
   describe '12 exercise' do
@@ -375,7 +413,6 @@ describe 'Exercise' do
       normal_words = 'в правильный тетраэдр abcd найти угол между высота
       тетраэдр dh и медиана bm боков грань bcd.'
       @exercise = Exercise.new(normal_words)
-      @exercise.define_features_and_figure_from_normal_words(@name_feature_figures, @name_figures)
     end
 
     it 'split "," "." "—" and word' do
@@ -383,6 +420,7 @@ describe 'Exercise' do
     end
 
     it 'get name figure and feature' do
+      @exercise.define_features_and_figure_from_normal_words(@name_feature_figures, @name_figures)
       expect(@exercise.get_name_figure).to eq('тетраэдр')
       expect(@exercise.get_features_figure).to eq(['правильный'])
     end
@@ -394,7 +432,6 @@ describe 'Exercise' do
       основание который равный 1, а боковой ребро равный 2, найти угол между
       прямая sb и cd.'
       @exercise = Exercise.new(normal_words)
-      @exercise.define_features_and_figure_from_normal_words(@name_feature_figures, @name_figures)
     end
 
     it 'split "," "." "—" and word' do
@@ -402,8 +439,22 @@ describe 'Exercise' do
     end
 
     it 'get name figure and feature' do
+      @exercise.define_features_and_figure_from_normal_words(@name_feature_figures, @name_figures)
       expect(@exercise.get_name_figure).to eq('пирамида')
       expect(@exercise.get_features_figure).to eq(['шестиугольный', 'правильный'])
+    end
+
+    it 'get equally' do
+      @exercise.define_equally
+      equallys = @exercise.get_equallys
+
+      expect(equallys[0][:name]).to eq('сторона')
+      expect(equallys[0][:feature]).to eq('основание')
+      expect(equallys[0][:value]).to eq('1')
+
+      expect(equallys[1][:name]).to eq('ребро')
+      expect(equallys[1][:feature]).to eq('боковой')
+      expect(equallys[1][:value]).to eq('2')
     end
   end
 
@@ -414,7 +465,6 @@ describe 'Exercise' do
       ph— высота дать пирамиды, точка m— середина она боковой ребро ap.'
       @exercise = Exercise.new(normal_words)
       @exercise.define_features_and_figure_from_normal_words(@name_feature_figures, @name_figures)
-      @exercise.define_median_from_normal_words
     end
 
     it 'split "," "." "—" and word' do

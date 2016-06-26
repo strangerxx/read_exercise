@@ -31,17 +31,25 @@ String.class_eval do
     end
     words.flatten
   end
+
+  def is_i?
+       /\A[-+]?\d+\z/ === self
+  end
 end
 
 class Exercise
   #normal_words - массив с нормализированными словами текста упражнения
   #index_figure - номер слова в normal_words,  обозначающий название фигуры
-  #index_features_figure - массив индексов в normal_words, обозначающий характеристики фигуры
-  attr_reader :normal_words, :index_figure, :index_features_figure, :medians
+  #index_features_figure - массив индексов в normal_words, обозначающий
+  #характеристики фигуры
+  attr_reader :normal_words, :index_figure, :index_features_figure, :medians,
+    :equallys
 
   def initialize(text)
     @normal_words = text.split(' ')
     self.partition_special_character!
+
+    define_median_from_normal_words
   end
 
   def get_name_figure
@@ -59,6 +67,23 @@ class Exercise
     @medians.map do |median|
       {letter: @normal_words[median[:index_letter]],
        edge: @normal_words[median[:index_edge]]}
+    end
+  end
+
+  def get_equallys
+    return [] unless @equallys
+    @equallys.map do |equally|
+      {name: @normal_words[equally[:index_name]],
+       feature: get_feature_name_equally(equally),
+       value: @normal_words[equally[:index_value]]}
+    end
+  end
+
+  def get_feature_name_equally(equally)
+    if equally[:index_feature]
+      @normal_words[equally[:index_feature]]
+    else
+      nil
     end
   end
 
@@ -90,7 +115,7 @@ class Exercise
   def define_median_from_normal_words()
     pattern_median = 'середина'
 
-    index_medians = search_in_normal_words(pattern_median, 1, false)
+    index_medians = search_in_normal_words(pattern_median)
     return unless index_medians
     # p index_medians
 
@@ -98,6 +123,21 @@ class Exercise
     index_medians.each do |index|
       median = define_median_through_index(index)
       @medians.push median
+    end
+  end
+
+  def define_equally
+    pattern_equally = 'равный'
+
+    index_equally = search_in_normal_words(pattern_equally)
+    return unless index_equally
+
+    @equallys = Array.new
+    prev_index_equally = 0
+    index_equally.each do |index|
+      equally = define_equally_through_index(index, prev_index_equally)
+      @equallys.push equally
+      prev_index_equally = index
     end
   end
 
@@ -125,7 +165,8 @@ class Exercise
       median[:index_letter] = index_letter
 
       pattern_edge = 'ребро'
-      index_edge = search_in_normal_words(pattern_edge, index_letter)
+      index_edge = search_in_normal_words(pattern_edge, index_letter,
+                                          @normal_words.length, true)
 
       # name_edge = @normal_words[index_edge+1]
       # name_edge.slice!(-1) if name_edge[-1] == ',' or name_edge[-1] == '.'
@@ -134,14 +175,44 @@ class Exercise
       median
     end
 
-    def search_in_normal_words(pattern, start_position = 0, one = true)
+    def define_equally_through_index(index_equally, prev_index_equally)
+      equally = Hash.new
+
+      index_value = index_equally+1
+      if @normal_words[index_value].is_i?
+        equally[:index_value] = index_value
+      else
+        raise 'don`t define value for equally'
+      end
+
+      pattern_name = ['ребро', 'сторона', 'высота']
+      index_name = search_in_normal_words(pattern_name, prev_index_equally, index_equally, true)
+      if index_name
+        equally[:index_name] = index_name
+        index_feature = nil
+        if @normal_words[index_name] == 'ребро'
+          index_feature = index_name-1 if @normal_words[index_name-1] == 'боковой'
+        elsif @normal_words[index_name] == 'сторона'
+          index_feature = index_name+1 if @normal_words[index_name+1] == 'основание'
+        end
+        equally[:index_feature] = index_feature
+      else
+        raise 'raise don`t definde name for equally'
+      end
+
+      equally
+    end
+
+    def search_in_normal_words(pattern, start_position = 0,
+                               end_position = @normal_words.length, one = false)
+      pattern = [pattern] unless pattern.class == Array
       indexes = Array.new
-      (start_position...@normal_words.length).each do |index|
-        if @normal_words[index] == pattern
-          if one
-            return index
-          else
+      (start_position...end_position).each do |index|
+        if pattern.include?(@normal_words[index])
+          unless one
             indexes.push index
+          else
+            return index
           end
         end
       end
