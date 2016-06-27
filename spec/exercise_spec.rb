@@ -76,6 +76,48 @@ describe 'Exercise' do
       end
     end
 
+    context 'char is =' do
+      it 'and it is last in string' do
+        exercise = Exercise.new('cl=')
+        expect(exercise.normal_words[0]).to eq('cl')
+        expect(exercise.normal_words[1]).to eq('=')
+      end
+
+      it 'and it isn`t last in string' do
+        exercise = Exercise.new('cl=b')
+        expect(exercise.normal_words[0]).to eq('cl')
+        expect(exercise.normal_words[1]).to eq('=')
+        expect(exercise.normal_words[2]).to eq('b')
+      end
+
+      it 'and it is first in string' do
+        exercise = Exercise.new('=cl')
+        expect(exercise.normal_words[0]).to eq('=')
+        expect(exercise.normal_words[1]).to eq('cl')
+      end
+    end
+
+    context 'char is :' do
+      it 'and it is last in string' do
+        exercise = Exercise.new('cl:')
+        expect(exercise.normal_words[0]).to eq('cl')
+        expect(exercise.normal_words[1]).to eq(':')
+      end
+
+      it 'and it isn`t last in string' do
+        exercise = Exercise.new('cl:b')
+        expect(exercise.normal_words[0]).to eq('cl')
+        expect(exercise.normal_words[1]).to eq(':')
+        expect(exercise.normal_words[2]).to eq('b')
+      end
+
+      it 'and it is first in string' do
+        exercise = Exercise.new(':cl')
+        expect(exercise.normal_words[0]).to eq(':')
+        expect(exercise.normal_words[1]).to eq('cl')
+      end
+    end
+
     context 'string contain two char' do
       it 'and they stay together c.,l' do
         exercise = Exercise.new('c.,l')
@@ -103,6 +145,18 @@ describe 'Exercise' do
       expect(exercise.normal_words[4]).to eq('b')
       expect(exercise.normal_words[5]).to eq('—')
     end
+
+    it 'ce:ec1=1:2.' do
+      exercise = Exercise.new('ce:ec1=1:2.')
+      expect(exercise.normal_words[0]).to eq('ce')
+      expect(exercise.normal_words[1]).to eq(':')
+      expect(exercise.normal_words[2]).to eq('ec1')
+      expect(exercise.normal_words[3]).to eq('=')
+      expect(exercise.normal_words[4]).to eq('1')
+      expect(exercise.normal_words[5]).to eq(':')
+      expect(exercise.normal_words[6]).to eq('2')
+      expect(exercise.normal_words[7]).to eq('.')
+    end
   end
 
   describe '1 exercise' do
@@ -112,7 +166,7 @@ describe 'Exercise' do
       @exercise = Exercise.new(normal_words)
     end
 
-    it 'split "," "." "—" and word' do
+    it 'split "," "." "—" "=" and word' do
       expect(@exercise.normal_words[6]).to eq('1')
       expect(@exercise.normal_words[7]).to eq('.')
 
@@ -147,7 +201,7 @@ describe 'Exercise' do
     end
 
     it 'get equally' do
-      @exercise.define_equally
+      @exercise.define_equallys
 
       equallys = @exercise.get_equallys
       expect(equallys[0][:name]).to eq('ребро')
@@ -166,7 +220,7 @@ describe 'Exercise' do
       @exercise = Exercise.new(normal_words)
     end
 
-    it 'split "," "." "—" and word' do
+    it 'split "," "." "—" "=" and word' do
       expect(@exercise.normal_words.length).to eq(26)
     end
 
@@ -181,7 +235,7 @@ describe 'Exercise' do
     end
 
     it 'get equally' do
-      @exercise.define_equally
+      @exercise.define_equallys
 
       expect(@exercise.get_equallys[0][:name]).to eq('сторона')
       expect(@exercise.get_equallys[0][:feature]).to eq('основание')
@@ -200,7 +254,7 @@ describe 'Exercise' do
       @exercise = Exercise.new(normal_words)
     end
 
-    it 'split "," "." "—" and word' do
+    it 'split "," "." "—" "=" and word' do
       expect(@exercise.normal_words.length).to eq(22)
     end
 
@@ -211,7 +265,7 @@ describe 'Exercise' do
     end
 
     it 'get equally' do
-      @exercise.define_equally
+      @exercise.define_equallys
 
       expect(@exercise.get_equallys[0][:name]).to eq('сторона')
       expect(@exercise.get_equallys[0][:feature]).to eq(nil)
@@ -231,7 +285,7 @@ describe 'Exercise' do
       @exercise = Exercise.new(normal_words)
     end
 
-    it 'split "," "." "—" and word' do
+    it 'split "," "." "—" "=" and word' do
       expect(@exercise.normal_words.length).to eq(28)
     end
 
@@ -242,7 +296,7 @@ describe 'Exercise' do
     end
 
     it 'raise don`t define value for equally' do
-      expect { @exercise.define_equally }.to raise_error(RuntimeError,
+      expect { @exercise.define_equallys }.to raise_error(RuntimeError,
                                                          "don`t define value for equally")
     end
   end
@@ -257,8 +311,8 @@ describe 'Exercise' do
       @exercise = Exercise.new(normal_words)
     end
 
-    it 'split "," "." "—" and word' do
-      expect(@exercise.normal_words.length).to eq(57)
+    it 'split "," "." "—" "=" and word' do
+      expect(@exercise.normal_words.length).to eq(58)
     end
 
     it 'get name figure and feature' do
@@ -271,6 +325,17 @@ describe 'Exercise' do
       expect(@exercise.get_medianas[0][:letter]).to eq('e')
       expect(@exercise.get_medianas[0][:edge]).to eq('db')
     end
+
+    it 'parsing equally sign' do
+      @exercise.pattern_equally_sign
+      equallys = @exercise.get_equallys
+
+      expect(equallys[0][:name]).to eq('dc')
+      expect(equallys[0][:value]).to eq('24')
+
+      expect(equallys[1][:name]).to eq('ab')
+      expect(equallys[1][:value]).to eq('10')
+    end
   end
 
   describe '6 exercise' do
@@ -280,7 +345,7 @@ describe 'Exercise' do
       @exercise = Exercise.new(normal_words)
     end
 
-    it 'split "," "." "—" and word' do
+    it 'split "," "." "—" "=" and word' do
       expect(@exercise.normal_words.length).to eq(17)
     end
 
@@ -303,7 +368,7 @@ describe 'Exercise' do
       @exercise = Exercise.new(normal_words)
     end
 
-    it 'split "," "." "—" and word' do
+    it 'split "," "." "—" "=" and word' do
       expect(@exercise.normal_words.length).to eq(17)
     end
 
@@ -326,14 +391,31 @@ describe 'Exercise' do
       @exercise = Exercise.new(normal_words)
     end
 
-    it 'split "," "." "—" and word' do
-      expect(@exercise.normal_words.length).to eq(21)
+    it 'split "," "." "—" "=" and word' do
+      expect(@exercise.normal_words.length).to eq(27)
     end
 
     it 'get name figure and feature' do
       @exercise.define_features_and_figure_from_normal_words(@name_feature_figures, @name_figures)
       expect(@exercise.get_name_figure).to eq('куб')
       expect(@exercise.get_features_figure).to eq([])
+    end
+
+    it 'parsing equally sign' do
+      @exercise.pattern_equally_sign
+      equallys = @exercise.get_equallys
+
+      expect(equallys).to eq([])
+    end
+
+    it 'define point delimiters' do
+      @exercise.define_point_delimiters
+      point_delimiters = @exercise.get_point_delimiters
+
+      expect(point_delimiters[0][:name_edge]).to eq('cc1')
+      expect(point_delimiters[0][:letter_point]).to eq('e')
+      expect(point_delimiters[0][:left]).to eq('1')
+      expect(point_delimiters[0][:right]).to eq('2')
     end
   end
 
@@ -344,14 +426,31 @@ describe 'Exercise' do
       @exercise = Exercise.new(normal_words)
     end
 
-    it 'split "," "." "—" and word' do
-      expect(@exercise.normal_words.length).to eq(21)
+    it 'split "," "." "—" "=" and word' do
+      expect(@exercise.normal_words.length).to eq(27)
     end
 
     it 'get name figure and feature' do
       @exercise.define_features_and_figure_from_normal_words(@name_feature_figures, @name_figures)
       expect(@exercise.get_name_figure).to eq('куб')
       expect(@exercise.get_features_figure).to eq([])
+    end
+
+    it 'parsing equally sign' do
+      @exercise.pattern_equally_sign
+      equallys = @exercise.get_equallys
+
+      expect(equallys).to eq([])
+    end
+
+    it 'define point delimiters' do
+      @exercise.define_point_delimiters
+      point_delimiters = @exercise.get_point_delimiters
+
+      expect(point_delimiters[0][:name_edge]).to eq('cc1')
+      expect(point_delimiters[0][:letter_point]).to eq('e')
+      expect(point_delimiters[0][:left]).to eq('2')
+      expect(point_delimiters[0][:right]).to eq('1')
     end
   end
 
@@ -363,7 +462,7 @@ describe 'Exercise' do
       @exercise = Exercise.new(normal_words)
     end
 
-    it 'split "," "." "—" and word' do
+    it 'split "," "." "—" "=" and word' do
       expect(@exercise.normal_words.length).to eq(34)
     end
 
@@ -387,7 +486,7 @@ describe 'Exercise' do
       @exercise = Exercise.new(normal_words)
     end
 
-    it 'split "," "." "—" and word' do
+    it 'split "," "." "—" "=" and word' do
       expect(@exercise.normal_words.length).to eq(34)
     end
 
@@ -403,7 +502,7 @@ describe 'Exercise' do
     end
 
     it 'raise don`t define value for equally' do
-      expect { @exercise.define_equally }.to raise_error(RuntimeError,
+      expect { @exercise.define_equallys }.to raise_error(RuntimeError,
                                                          "don`t define value for equally")
     end
   end
@@ -415,7 +514,7 @@ describe 'Exercise' do
       @exercise = Exercise.new(normal_words)
     end
 
-    it 'split "," "." "—" and word' do
+    it 'split "," "." "—" "=" and word' do
       expect(@exercise.normal_words.length).to eq(17)
     end
 
@@ -434,7 +533,7 @@ describe 'Exercise' do
       @exercise = Exercise.new(normal_words)
     end
 
-    it 'split "," "." "—" and word' do
+    it 'split "," "." "—" "=" and word' do
       expect(@exercise.normal_words.length).to eq(25)
     end
 
@@ -445,7 +544,7 @@ describe 'Exercise' do
     end
 
     it 'get equally' do
-      @exercise.define_equally
+      @exercise.define_equallys
       equallys = @exercise.get_equallys
 
       expect(equallys[0][:name]).to eq('сторона')
@@ -467,7 +566,7 @@ describe 'Exercise' do
       @exercise.define_features_and_figure_from_normal_words(@name_feature_figures, @name_figures)
     end
 
-    it 'split "," "." "—" and word' do
+    it 'split "," "." "—" "=" and word' do
       expect(@exercise.normal_words.length).to eq(36)
     end
 

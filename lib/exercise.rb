@@ -19,17 +19,16 @@ String.class_eval do
     return [self] if chars.empty?
     words = self.partition_with_delete(chars.shift)
     chars.each do |char|
-      new_words = Array.new
       words.map! do |word|
-        unless word.length == 1 or !word.include?(char)
-          word.partition_with_delete(char)
-        else
+        if word.length == 1 or !word.include?(char)
           word
+        else
+          word.partition_with_delete(char)
         end
       end
-      # words = new_words
+      words.flatten!
     end
-    words.flatten
+    words
   end
 
   def is_i?
@@ -43,13 +42,13 @@ class Exercise
   #index_features_figure - массив индексов в normal_words, обозначающий
   #характеристики фигуры
   attr_reader :normal_words, :index_figure, :index_features_figure, :medians,
-    :equallys
+    :equallys, :point_delimiters
 
   def initialize(text)
     @normal_words = text.split(' ')
     self.partition_special_character!
 
-    define_median_from_normal_words
+    define_medians
   end
 
   def get_name_figure
@@ -76,6 +75,16 @@ class Exercise
       {name: @normal_words[equally[:index_name]],
        feature: get_feature_name_equally(equally),
        value: @normal_words[equally[:index_value]]}
+    end
+  end
+
+  def get_point_delimiters
+    return [] unless @point_delimiters
+    @point_delimiters.map do |point_delimiter|
+      {name_edge: @normal_words[point_delimiter[:index_name_edge]],
+       letter_point: @normal_words[point_delimiter[:index_letter_point]],
+       left: @normal_words[point_delimiter[:index_left]],
+       right: @normal_words[point_delimiter[:index_right]]}
     end
   end
 
@@ -112,12 +121,9 @@ class Exercise
     end
   end
 
-  def define_median_from_normal_words()
-    pattern_median = 'середина'
-
-    index_medians = search_in_normal_words(pattern_median)
+  def define_medians
+    index_medians = search_in_normal_words('середина')
     return unless index_medians
-    # p index_medians
 
     @medians = Array.new
     index_medians.each do |index|
@@ -126,10 +132,8 @@ class Exercise
     end
   end
 
-  def define_equally
-    pattern_equally = 'равный'
-
-    index_equally = search_in_normal_words(pattern_equally)
+  def define_equallys
+    index_equally = search_in_normal_words('равный')
     return unless index_equally
 
     @equallys = Array.new
@@ -141,9 +145,43 @@ class Exercise
     end
   end
 
+  def pattern_equally_sign
+    index_equally_sign = search_in_normal_words('=')
+    return unless index_equally_sign
+
+    @equallys = Array.new
+    index_equally_sign.each do |index|
+      equally = Hash.new
+
+      index_value = index + 1
+      if @normal_words[index_value].is_i?
+        index_delimiters = index_value + 1
+        next if @normal_words[index_value+1] == ':'
+        equally[:index_value] = index_value
+      else
+        raise 'don`t define value for equally_sign'
+      end
+
+      equally[:index_name] = index - 1
+
+      @equallys.push equally
+    end
+  end
+
+  def define_point_delimiters
+    index_point_delimiters = search_in_normal_words(':')
+    return unless index_point_delimiters
+
+    @point_delimiters = Array.new
+    index_point_delimiters.each_cons(2) do |index|
+      point_delimiter = define_point_delimiter_through_index(index[1])
+      @point_delimiters.push point_delimiter
+    end
+  end
+
   protected
 
-    def partition_special_character!(characters = [',', '.', '—'])
+    def partition_special_character!(characters = [',', '.', '—', '=', ':'])
       clear_words = Array.new
       @normal_words.each do |word|
         # p word
@@ -201,6 +239,23 @@ class Exercise
       end
 
       equally
+    end
+
+    def define_point_delimiter_through_index(index_point_delimiters)
+      point_delimiter = Hash.new
+
+      index_edge = search_in_normal_words('ребро', 0,
+                                          index_point_delimiters, true)
+      point_delimiter[:index_name_edge] = index_edge+1
+
+      index_point = search_in_normal_words('точка', index_edge,
+                                          index_point_delimiters, true)
+      point_delimiter[:index_letter_point] = index_point+1
+
+      point_delimiter[:index_left] = index_point_delimiters-1
+      point_delimiter[:index_right] = index_point_delimiters+1
+
+      point_delimiter
     end
 
     def search_in_normal_words(pattern, start_position = 0,
